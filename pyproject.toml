@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quran-stat"
+version = "0.1.0"
+description = "Analyse locale des lettres et diacritiques du corpus fourni"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = ["python-docx>=1.2,<2", "openpyxl>=3.1,<4", "numpy>=1.25,<3", "matplotlib>=3.8,<4"]
+
+[project.scripts]
+quran-stat = "quran_stat.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["quran_stat*"]

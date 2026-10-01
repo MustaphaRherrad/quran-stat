@@ -1,0 +1,17 @@
+{
+  "corpus": "verses.csv",
+  "sha256": "d6f98c471f17c70aef2a732569c7d646948145164f1eaf01e287fe7a0306186c",
+  "source_filename": "quran.docx",
+  "source_sha256": "68b1925ed2731b26ee6feea0f348f43ce1995b677e631354414f7621594d4c3e",
+  "verse_count": 6236,
+  "letter_count": 330705,
+  "writing_convention": "Texte coranique écrit selon l'usage courant de la langue arabe, d'après la description du corpus par le responsable du projet.",
+  "scope": "Les résultats concernent uniquement ce corpus et cette convention d'écriture.",
+  "future_study": "Une étude distincte du texte selon le rasm othmani (الرسم العثماني) est envisagée ; elle n'est pas encore réalisée.",
+  "provenance": "Texte extrait du document Word fourni pour ce projet et validé par comptage indépendant. Les métadonnées du document ne sont pas incluses dans le CSV.",
+  "encoding": "UTF-8 with BOM",
+  "columns": [
+    "Verse_ID",
+    "Verse_Text"
+  ]
+}

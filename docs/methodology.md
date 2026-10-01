@@ -66,13 +66,33 @@ Les règles en vigueur sont :
   éventuellement avec shadda ; le fathatan ne remplace pas la fatha ;
 - exclusion supplémentaire de l'alif de `ال` initial, `وال`, `فال` et `بال` ;
 - `و` et `ي` sans les sept harakat, sans filtre sur la voyelle précédente ;
-- `آ` comptée séparément.
+- `آ` comptée séparément ;
+- `ى` en fin de mot, sans aucune des sept harakat sur cette lettre, comptée
+  séparément ; aucune condition sur la voyelle précédente. La shadda reste
+  une dimension distincte et ne constitue pas une haraka.
 
 Le filtre de l'article est nécessaire même avec la condition de fatha, notamment
 dans `وَالْـ` et `فَالْـ`. Il ne constitue pas une analyse morphologique exhaustive
-de tous les préfixes. Résultats : ا 24 124, و 10 034, ي 9 857, آ 1 511, soit
-45 526 occurrences. Les exclusions sont documentées par mot et verset.
+de tous les préfixes. Résultats : ا 24 124, و 10 034, ي 9 857, آ 1 511,
+ى 2 592, soit 48 118 occurrences. Les exclusions sont documentées par mot et verset.
 Ce classement graphique est distinct d'une identification phonétique du madd.
+
+### Ajout de l’alif maqsoura — comparaison avant/après
+
+L’ajout de `ى` final sans haraka porte le total de **45 526 à 48 118**
+(+2 592), sans changer les quatre catégories antérieures ni les **330 705**
+lettres écrites. Les 2 592 `ى` du corpus sont tous finaux et sans signe.
+`مُوسَى` est inclus, ainsi que `هُدًى` : dans cette graphie le fathatan porte
+sur `د`, pas sur `ى`. Le corpus contient 93 cas avec fathatan précédent.
+Un `ى` portant lui-même une des sept harakat est exclu, tout comme un `ى`
+non final. Les formes synthétiques correspondantes sont couvertes par les tests.
+Les exports ajoutent une colonne `ى` et les totaux avec/sans madda l’incluent.
+
+Ce classement graphique ne distingue pas la pause de la liaison. Pour les
+noms avec tanwin, la réalisation à la pause diffère de celle en liaison
+([référence sur la pause](https://awkafonline.gov.eg/content-sections/116/5026/الوقف-على-آخر-الكلم)).
+Il ne faut donc pas interpréter les 2 592 occurrences comme des prolongations
+prononcées dans tous les contextes.
 
 ## Statistiques
 

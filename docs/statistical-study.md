@@ -3,12 +3,12 @@
 Cette étude porte sur le texte coranique **écrit selon l'usage courant de la langue arabe**, tel qu'il figure dans le document Word fourni. Les résultats sont propres à ce corpus et à cette convention d'écriture.
 Une **deuxième étude distincte selon la convention du rasm othmani (الرسم العثماني)** est envisagée par la suite. Elle n'est pas encore réalisée ; aucune comparaison avec cette convention n'est incluse dans les résultats actuels.
 
-Base analysée : **6 236 versets, 114 sourates, 330 705 lettres et 77 794 mots graphiques**.
+Base analysée : **6 236 versets  114 sourates  330 705 lettres et 77 794 mots graphiques**.
 Le total de lettres est contrôlé contre les textes sans harakat et contre chaque ligne du CSV des variations.
 
 ## 1. Méthode et portée
 
-Source de référence : `data/verses.csv`. Les tableaux de versets détaillés peuvent être régénérés localement avec la commande complète du README ; le manifeste contient l’empreinte SHA-256 du corpus.
+Source de référence : `data/verses.csv`. Les tableaux détaillés sont régénérables avec la commande complète du README ; le manifeste conserve l’empreinte du corpus.
 Les mots sont des suites de lettres arabes du texte sans harakat. Les préfixes attachés restent attachés ; aucune lemmatisation ni fusion de ا, أ, إ, آ, ة, ه, ى et ي. Ce sont des formes graphiques, pas des racines ni des lexèmes.
 Les lettres et leurs signes sont analysés en NFC. La shadda ne double pas le nombre de lettres. Les numéros, parenthèses et espaces sont exclus. Les sourates sont reconstruites à partir des retours à (1), avec contrôle de toute la séquence des numéros.
 Il s'agit de statistiques de la totalité du corpus fourni : écart type de population (ddof=0), quantiles à interpolation linéaire. Pas de tests de significativité ni d'hypothèse d'indépendance des versets. Les différences ne prouvent ni intention, ni causalité, ni singularité par rapport à d'autres corpus.
@@ -106,17 +106,20 @@ Ces catégories ne signifient pas qu'une annotation manque : elles comprennent n
 
 ### Lettres de prolongation : répartition graphique
 
-Total retenu : **45 526 occurrences**  pour ا  و et ي sans les sept harakat  avec آ ajoutée séparément.
+Total retenu : **48 118 occurrences**  pour ا  و et ي selon les critères ci-dessous  avec آ et ى final sans haraka séparés.
 Pour ا, la lettre précédente doit porter une **fatha** dans le même mot (éventuellement avec shadda). Le fathatan ne remplace pas la fatha dans ce filtre. **11958 alifs d'article sont exclus** dans ال initial ou dans وال, فال, بال ; **7458 autres alifs** sont exclus faute de fatha précédente.
 Le filtre de l'article reste nécessaire : dans وَالْـ et فَالْـ, une fatha précède aussi l'alif. Cette règle graphique reste limitée aux préfixes cités ; elle n'est pas une analyse morphologique exhaustive. Le critère de و et ي reste l'absence de haraka, et آ est comptée séparément. Le total général reste 330 705 lettres.
+L’alif maqsoura ى est retenu en fin de mot sans aucune des sept harakat sur cette lettre, sans condition sur les signes de la lettre précédente. Ainsi مُوسَى et هُدًى sont inclus : dans هُدًى, le fathatan porte sur د. Ce classement graphique ne distingue pas la pause de la liaison ; la shadda reste une dimension séparée.
+Comparaison avant/après l’ajout de ى final sans haraka : 45 526 → 48 118 candidats (+2 592). Les quatre catégories précédentes et le total des lettres écrites restent inchangés.
 Les pourcentages sont calculés sur ce total, et non sur les 330 705 lettres. Ce critère graphique ne constitue pas une identification phonétique de chaque prolongation.
 
 | Lettre | Occurrences | Part du total retenu |
 |---|---:|---:|
-| ا | 24124 | 52,99 % |
-| و | 10034 | 22,04 % |
-| ي | 9857 | 21,65 % |
-| آ | 1511 | 3,32 % |
+| ا | 24124 | 50,14 % |
+| و | 10034 | 20,85 % |
+| ي | 9857 | 20,49 % |
+| آ | 1511 | 3,14 % |
+| ى | 2592 | 5,39 % |
 
 ![Répartition des lettres de prolongation](assets/05_vowel_letters_pie.png)
 

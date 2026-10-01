@@ -45,19 +45,14 @@ def frequency_rows(counts):
             for rank, (form, count) in enumerate(sorted(counts.items(), key=lambda item: (-item[1], item[0])), 1)]
 
 
-def vowel_letter_rows(variations, excluded_alifs=0):
-    counts = {base: sum(count for form, count in variations.items()
-                        if form[0] == base and not any(mark in HARAKAT for mark in form[1:]))
-              for base in "اويآ"}
-    counts["ا"] -= excluded_alifs
-    if counts["ا"] < 0:
-        raise ValueError("Le nombre d'alifs exclus dépasse le nombre d'alifs sans haraka.")
+def vowel_letter_rows(retained):
+    counts = {base: retained.get(base, 0) for base in "اويآى"}
     total = sum(counts.values())
     return [{"letter": base, "count": count, "share": count / total if total else 0}
             for base, count in counts.items()]
 
 
-def plots(directory, verse_rows, surah_rows, letters, words, variations, fit, excluded_alifs=0):
+def plots(directory, verse_rows, surah_rows, letters, words, variations, fit, retained_vowels):
     os.environ.setdefault("MPLCONFIGDIR", str(directory / ".mplconfig"))
     import matplotlib
     matplotlib.use("Agg")
@@ -126,14 +121,14 @@ def plots(directory, verse_rows, surah_rows, letters, words, variations, fit, ex
     axes[1].set(xlabel="Numéro de sourate", ylabel="Lettres par verset", title="Longueur moyenne des versets par sourate")
     save(fig, "04_surahs")
 
-    vowel_rows = vowel_letter_rows(variations, excluded_alifs)
+    vowel_rows = vowel_letter_rows(retained_vowels)
     total = sum(row["count"] for row in vowel_rows)
-    fig, ax = plt.subplots(figsize=(9, 6.5))
+    fig, ax = plt.subplots(figsize=(10, 6.5))
     wedges, labels, percentages = ax.pie(
         [row["count"] for row in vowel_rows],
         labels=[row["letter"] for row in vowel_rows],
-        colors=["#2563eb", "#0f766e", "#c2410c", "#7e22ce"],
-        autopct=lambda percent: f"{percent:.2f} %".replace(".", ","),
+        colors=["#2563eb", "#0f766e", "#c2410c", "#7e22ce", "#a16207"],
+        autopct=lambda percent: f"{percent:.2f} %".replace(".", ",") if percent >= 8 else "",
         startangle=90, counterclock=False, pctdistance=0.74,
         wedgeprops={"edgecolor": "white", "linewidth": 2},
         textprops={"fontsize": 15},
@@ -142,19 +137,47 @@ def plots(directory, verse_rows, surah_rows, letters, words, variations, fit, ex
         label.set_color("white")
         label.set_fontsize(12)
         label.set_fontweight("bold")
-    names = ["Alif", "Waw", "Ya", "Alif madda"]
-    ax.legend(wedges, [f"{name} : {row['count']:,}".replace(",", " ")
+    names = ["Alif", "Waw", "Ya", "Alif madda", "Alif maqsoura"]
+    ax.legend(wedges, [f"{name} : {row['count']:,} ({100 * row['share']:.2f} %)".replace(",", " ").replace(".", ",")
                        for name, row in zip(names, vowel_rows)],
               loc="center left", bbox_to_anchor=(1, 0.5), frameon=False)
     ax.set_title("Lettres de prolongation — répartition graphique\n"
                  + f"{total:,} occurrences · alif madda inclus".replace(",", " "), pad=22)
     fig.text(0.5, 0.025, "Alif : sans haraka, après fatha dans le même mot, hors article identifié.\n"
-             "Waw et ya : sans haraka ; آ séparée.\n"
-             "Les pourcentages portent sur ces quatre catégories, pas sur toutes les lettres du corpus.",
+             "Waw et ya : sans haraka ; آ séparée ; ى final sans haraka.\n"
+             "Les pourcentages portent sur ces cinq catégories, pas sur toutes les lettres du corpus.",
              ha="center", fontsize=9, color="#475569")
     fig.tight_layout(rect=(0, 0.09, 1, 1))
     fig.savefig(directory / "05_vowel_letters_pie.png", dpi=180)
     fig.savefig(directory / "05_vowel_letters_pie.pdf")
+    plt.close(fig)
+
+    # Aperçu public régénérable avec les mêmes données que le rapport.
+    fig, axes = plt.subplots(2, 2, figsize=(12, 8))
+    axes[0, 0].hist(lengths, bins="fd", color="#2563eb")
+    axes[0, 0].set(title="Longueur des versets", xlabel="Lettres par verset", ylabel="Versets")
+    frequent = letters.most_common(10)
+    axes[0, 1].barh([x[0] for x in frequent][::-1], [x[1] for x in frequent][::-1], color="#0f766e")
+    axes[0, 1].set(title="Dix lettres les plus fréquentes", xlabel="Occurrences")
+    marks = {name: sum(count for form, count in variations.items() if mark in form[1:])
+             for mark, name in HARAKAT.items()}
+    axes[1, 0].bar(list(marks), list(marks.values()), color="#7e22ce")
+    axes[1, 0].tick_params(axis="x", labelrotation=30)
+    axes[1, 0].set(title="Fréquence des sept harakat", ylabel="Signes")
+    axes[1, 1].barh([r["letter"] for r in vowel_rows][::-1],
+                    [r["count"] for r in vowel_rows][::-1], color="#c2410c")
+    for i, row in enumerate(reversed(vowel_rows)):
+        axes[1, 1].text(row["count"] + 250, i,
+                        f"{row['count']:,} · {row['share']:.1%}".replace(",", " "), va="center", fontsize=9)
+    axes[1, 1].set(title=f"Candidats à la prolongation : {total:,}".replace(",", " "),
+                    xlabel="Occurrences", xlim=(0, max(r["count"] for r in vowel_rows) * 1.4))
+    fig.suptitle("Texte coranique écrit selon l’usage courant de la langue arabe\n"
+                 + f"{sum(letters.values()):,} lettres · {len(verse_rows):,} versets · {len(surah_rows)} sourates".replace(",", " "))
+    fig.text(0.5, 0.01, "Critères graphiques : ا après fatha, hors article ; و et ي sans haraka ; آ séparée ; ى final sans haraka.",
+             ha="center", fontsize=9)
+    fig.tight_layout(rect=(0, 0.04, 1, 0.94))
+    fig.savefig(directory / "corpus-overview.png", dpi=180)
+    fig.savefig(directory / "corpus-overview.pdf")
     plt.close(fig)
 
 
@@ -217,9 +240,11 @@ def make_report(summary, verse_rows, surah_rows, letter_rows, word_rows, output)
     vowel_rows = summary["vowel_letters"]
     vowel_total = sum(row["count"] for row in vowel_rows)
     lines += ["### Lettres de prolongation : répartition graphique", "",
-              f"Total retenu : **{vowel_total:,} occurrences**, pour ا, و et ي sans les sept harakat, avec آ ajoutée séparément.".replace(",", " "),
+              f"Total retenu : **{vowel_total:,} occurrences**, pour ا, و et ي selon les critères ci-dessous, avec آ et ى final sans haraka séparés.".replace(",", " "),
               f"Pour ا, la lettre précédente doit porter une **fatha** dans le même mot (éventuellement avec shadda). Le fathatan ne remplace pas la fatha dans ce filtre. **{summary['excluded_article_alifs']} alifs d'article sont exclus** dans ال initial ou dans وال, فال, بال ; **{summary['excluded_alifs_by_reason'].get('no_preceding_fatha', 0)} autres alifs** sont exclus faute de fatha précédente.",
               "Le filtre de l'article reste nécessaire : dans وَالْـ et فَالْـ, une fatha précède aussi l'alif. Cette règle graphique reste limitée aux préfixes cités ; elle n'est pas une analyse morphologique exhaustive. Le critère de و et ي reste l'absence de haraka, et آ est comptée séparément. Le total général reste 330 705 lettres.",
+              "L’alif maqsoura ى est retenu en fin de mot sans aucune des sept harakat sur cette lettre, sans condition sur les signes de la lettre précédente. Ainsi مُوسَى et هُدًى sont inclus : dans هُدًى, le fathatan porte sur د. Ce classement graphique ne distingue pas la pause de la liaison ; la shadda reste une dimension séparée.",
+              f"Comparaison avant/après l’ajout de ى final sans haraka : {vowel_total - vowel_rows[-1]['count']:,} → {vowel_total:,} candidats (+{vowel_rows[-1]['count']:,}). Les quatre catégories précédentes et le total des lettres écrites restent inchangés.".replace(",", " "),
               "Les pourcentages sont calculés sur ce total, et non sur les 330 705 lettres. Ce critère graphique ne constitue pas une identification phonétique de chaque prolongation.", "",
               "| Lettre | Occurrences | Part du total retenu |", "|---|---:|---:|"]
     for row in vowel_rows:
@@ -294,6 +319,7 @@ def run(input_dir, output):
     word_bigrams, letter_bigrams, repeated = Counter(), Counter(), defaultdict(list)
     surah, previous = 0, 0
     excluded_alifs = 0
+    retained_vowels = Counter()
     alif_exclusions = []
     for index, (source, cleaned) in enumerate(zip(original, plain), 1):
         if source["Verse_ID"] != str(index) or cleaned["Verse_ID"] != str(index):
@@ -318,7 +344,8 @@ def run(input_dir, output):
         all_words.extend(words)
         letter_counts.update("".join(words))
         variation_counts.update(units)
-        _, _, exclusions = analyze_vowel_letters(source["Verse_Text"])
+        _, retained, exclusions = analyze_vowel_letters(source["Verse_Text"])
+        retained_vowels.update(retained)
         excluded_alifs += len(exclusions)
         alif_exclusions.extend({"verse_id": index, **item} for item in exclusions)
         word_bigrams.update(" ".join(pair) for pair in zip(words, words[1:]))
@@ -407,7 +434,7 @@ def run(input_dir, output):
                "letter_concentration": concentration(letter_counts.values()),
                "variation_concentration": concentration(variation_counts.values()),
                "harakat_counts": dict(harakat), "annotation_structure": dict(structure),
-               "vowel_letters": vowel_letter_rows(variation_counts, excluded_alifs),
+               "vowel_letters": vowel_letter_rows(retained_vowels),
                "excluded_alifs": excluded_alifs,
                "excluded_alifs_by_reason": dict(Counter(row['reason'] for row in alif_exclusions)),
                "excluded_article_alifs": sum(row['reason'] == 'article' for row in alif_exclusions),
@@ -445,7 +472,7 @@ def run(input_dir, output):
             sheet.append(list(row.values()))
     book.save(output / "statistical_tables.xlsx")
     write_json(output / "summary.json", summary)
-    plots(output, verse_rows, surah_rows, letter_counts, words, variation_counts, fit, excluded_alifs)
+    plots(output, verse_rows, surah_rows, letter_counts, words, variation_counts, fit, retained_vowels)
     make_report(summary, verse_rows, surah_rows, letter_rows, word_rows, output)
     print(f"Rapport : {(output / 'report.html').resolve()}", flush=True)
     return summary

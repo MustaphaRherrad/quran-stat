@@ -52,7 +52,7 @@ class CorpusRegressionTests(unittest.TestCase):
             _, retained, exclusions = analyze_vowel_letters(verse)
             totals.update(retained)
             reasons.update(item["reason"] for item in exclusions)
-        self.assertEqual(totals, {"ا": 24124, "و": 10034, "ي": 9857, "آ": 1511})
+        self.assertEqual(totals, {"ا": 24124, "و": 10034, "ي": 9857, "آ": 1511, "ى": 2592})
         self.assertEqual(reasons, {"article": 11958, "no_preceding_fatha": 7458})
 
 

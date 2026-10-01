@@ -1,4 +1,4 @@
-"""Candidats graphiques : alif après fatha, hors article ; waw, ya et آ séparés."""
+"""Candidats graphiques : alif après fatha, hors article ; ى final sans haraka ; waw, ya et آ séparés."""
 
 import re
 import unicodedata
@@ -11,6 +11,8 @@ ARABIC_WORD = re.compile(r"[\u0621-\u064A\u064B-\u065F\u0670]+")
 
 def analyze_vowel_letters(text):
     """Exige une fatha précédente pour ا et exclut les préfixes d'article connus.
+
+    Retient aussi ى sans haraka uniquement en fin de mot.
 
     Les harakat sont ignorées pour repérer les positions des lettres. Il s'agit
     d'une règle graphique, pas d'une analyse morphologique ou phonétique.
@@ -27,7 +29,7 @@ def analyze_vowel_letters(text):
         elif len(bases) >= 3 and bases[0] in "وفب" and bases[1:3] == "ال":
             article_index, pattern = 1, bases[:3]
         for index, form in enumerate(units):
-            if form[0] not in "اويآ" or any(mark in HARAKAT for mark in form[1:]):
+            if form[0] not in "اويآى" or any(mark in HARAKAT for mark in form[1:]):
                 continue
             raw[form[0]] += 1
             previous = units[index - 1] if index else ""
@@ -37,6 +39,8 @@ def analyze_vowel_letters(text):
                     reason = "article"
                 elif "َ" not in previous[1:]:
                     reason = "no_preceding_fatha"
+            if form[0] == "ى" and index != len(units) - 1:
+                reason = "non_final_maqsoura"
             if reason:
                 exclusions.append({"word": word, "pattern": pattern if reason == "article" else "",
                                    "reason": reason, "previous_unit": previous,

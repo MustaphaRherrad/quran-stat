@@ -60,6 +60,9 @@ remplace les fichiers de même nom dans le dossier de sortie.
 # Document Word facultatif, conservé localement
 .venv/bin/python -m quran_stat --input local/quran.docx --output-dir outputs/word
 
+# Actualiser le rapport et les figures du dépôt après une analyse complète
+.venv/bin/python -m quran_stat.export_study_docs
+
 # Tests
 .venv/bin/python -m unittest discover -s tests -v
 ```

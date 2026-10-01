@@ -4,6 +4,26 @@ from quran_stat.vowel_letters import analyze_vowel_letters
 
 
 class VowelLettersTests(unittest.TestCase):
+    def test_final_maqsoura_without_haraka(self):
+        raw, retained, exclusions = analyze_vowel_letters("مُوسَى هُدًى (عَلَى)، فَتَى")
+        self.assertEqual(raw["ى"], 4)
+        self.assertEqual(retained["ى"], 4)
+        self.assertFalse(exclusions)
+
+    def test_maqsoura_with_each_haraka_is_not_retained(self):
+        for mark in "ًٌٍَُِْ":
+            with self.subTest(mark=mark):
+                raw, retained, exclusions = analyze_vowel_letters("بَى" + mark)
+                self.assertEqual(raw["ى"], 0)
+                self.assertEqual(retained["ى"], 0)
+
+    def test_nonfinal_maqsoura_and_shadda_dimension(self):
+        raw, retained, exclusions = analyze_vowel_letters("بَىب بَىّ")
+        self.assertEqual(raw["ى"], 2)
+        self.assertEqual(retained["ى"], 1)
+        self.assertEqual(exclusions[0]["reason"], "non_final_maqsoura")
+        self.assertEqual(sum(raw.values()), sum(retained.values()) + len(exclusions))
+
     def test_article_with_marks_and_three_prefixes(self):
         raw, retained, exclusions = analyze_vowel_letters("الْكِتَابُ وَالْكِتَابُ فَالْكِتَابُ بِالْكِتَابِ")
         self.assertEqual(raw["ا"], 8)

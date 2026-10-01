@@ -11,6 +11,19 @@ Une **deuxième étude, distincte, sur le texte selon la convention du rasm
 othmani (الرسم العثماني)** est envisagée par la suite. Elle n'est pas encore
 réalisée ; les résultats actuels ne portent pas sur cette convention.
 
+## Aperçu de l’étude
+
+![Aperçu statistique : longueur des versets, lettres, harakat et prolongations](docs/assets/corpus-overview.png)
+
+Le corpus compte **330 705 lettres**. Un verset contient en moyenne 53 lettres
+(médiane : 43) ; le verset le plus long en contient 551. Le camembert et les
+critères détaillés des lettres de prolongation figurent dans le
+[rapport statistique complet](docs/statistical-study.md).
+
+Cette figure résume des distributions, elle ne représente pas le rasm othmani.
+Les catégories de prolongation suivent les conventions explicitées dans le
+rapport et dans la [méthodologie](docs/methodology.md).
+
 Le projet fonctionne localement, sans compte Google ni service externe.
 
 ## Installation et analyse

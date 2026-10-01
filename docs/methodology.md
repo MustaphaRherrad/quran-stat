@@ -1,5 +1,8 @@
 # Méthode et provenance
 
+Le [rapport statistique complet](statistical-study.md) et ses figures sont
+publiés avec le code afin de permettre une première lecture directe du dépôt.
+
 ## Corpus de référence
 
 La présente étude porte sur le texte coranique **écrit selon l'usage courant de
